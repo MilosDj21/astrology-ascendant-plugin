@@ -86,6 +86,8 @@ const App = () => {
   };
 
   const calculateAscendantSign = () => {
+    setAscendant("");
+
     const { year, month, day, hour, minute, second, latitude, longitude } = birthData;
 
     if (!isDateValid(month, day)) return;
@@ -96,12 +98,12 @@ const App = () => {
     const ascendantDegree = calculateAscendant(LST, latitude);
     const ascendantSign = zodiacSign(ascendantDegree);
 
-    setAscendant(`${ascendantSign} at ${ascendantDegree.toFixed(2)} degrees`);
+    setAscendant(ascendantSign);
   };
 
   return (
-    <div>
-      <div>
+    <div className="mainDiv">
+      <div className="inputDiv">
         <label>Godina: </label>
         <input
           type="number"
@@ -118,7 +120,8 @@ const App = () => {
           }}
         />
       </div>
-      <div>
+
+      <div className="inputDiv">
         <label>Mesec: </label>
         <select
           value={birthData.month}
@@ -140,7 +143,7 @@ const App = () => {
         </select>
       </div>
 
-      <div>
+      <div className="inputDiv">
         <label>Dan: </label>
         <input
           type="number"
@@ -153,7 +156,7 @@ const App = () => {
         />
       </div>
 
-      <div>
+      <div className="inputDiv">
         <label>Sat: </label>
         <input
           type="number"
@@ -166,7 +169,7 @@ const App = () => {
         />
       </div>
 
-      <div>
+      <div className="inputDiv">
         <label>Minut: </label>
         <input
           type="number"
@@ -180,7 +183,7 @@ const App = () => {
         />
       </div>
 
-      <div>
+      <div className="inputDiv">
         <label>Država: </label>
         <select>
           <option value="sel">Srbija</option>
@@ -191,7 +194,9 @@ const App = () => {
         </select>
       </div>
 
-      <button onClick={calculateAscendantSign}>Izračunaj podznak</button>
+      <div className="buttonDiv">
+        <button onClick={calculateAscendantSign}>Izračunaj podznak</button>
+      </div>
 
       {!isValidDate && (
         <div>
@@ -200,8 +205,8 @@ const App = () => {
       )}
 
       {ascendant && (
-        <div>
-          <h3>Vaš podznak je: {ascendant}</h3>
+        <div className="outputDiv">
+          <h2>Vaš podznak je: {ascendant}</h2>
         </div>
       )}
     </div>

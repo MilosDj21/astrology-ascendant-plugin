@@ -1,4 +1,66 @@
-#root {
-  /* test */
-  color: blue;
+#root .mainDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#root .inputDiv {
+  display: flex;
+  margin: 0.5rem;
+}
+
+#root .inputDiv label {
+  margin: 0.5rem;
+}
+
+#root .inputDiv input,
+#root .inputDiv select {
+  width: 10rem;
+  padding: 0.3rem 0;
+  border: 1px solid #939393;
+  border-radius: 7px;
+  font-size: 18px;
+  background-color: #27625f;
+  color: white;
+  text-align: center;
+}
+
+#root .inputDiv label {
+  font-size: 18px;
+  color: #27625f;
+  display: inline-block;
+  width: 7rem;
+}
+
+#root .buttonDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4rem;
+}
+
+#root .buttonDiv button {
+  background-color: #27625f;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 7px;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+}
+#root .buttonDiv button:hover {
+  background-color: #1e4d4a;
+}
+
+#root .outputDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 4rem;
+}
+
+@media screen and (max-width: 480px) {
+  #root .outputDiv {
+    margin: 0.5rem;
+  }
 }
