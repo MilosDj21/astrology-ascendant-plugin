@@ -1,18 +1,37 @@
 import { useState } from "react";
 
-const App = () => {
-  const [birthData, setBirthData] = useState({
-    year: 1995,
-    month: 8,
-    day: 30,
-    hour: 10,
-    minute: 15,
-    second: 0,
-    latitude: 40.7128,
-    longitude: -74.006,
-  });
+import "react-datepicker/dist/react-datepicker.css";
 
+const App = () => {
+  const startDate = new Date();
+  const [isValidDate, setIsValidDate] = useState(true);
+  const [birthData, setBirthData] = useState({
+    year: startDate.getFullYear(),
+    month: startDate.getMonth() + 1,
+    day: startDate.getDate(),
+    hour: 0,
+    minute: 0,
+    second: 0,
+    latitude: 44.8125,
+    longitude: 20.4612,
+  });
   const [ascendant, setAscendant] = useState("");
+
+  const validateInput = (value, min, max) => {
+    if (typeof value === "number" && value < max && value >= min) {
+      return true;
+    }
+    return false;
+  };
+
+  const isDateValid = (month, day) => {
+    if (Number(month) === 2 && Number(day) > 28) {
+      setIsValidDate(false);
+      return false;
+    }
+    setIsValidDate(true);
+    return true;
+  };
 
   // Step 1: Calculate Julian Date
   const julianDate = (year, month, day, hour, minute, second) => {
@@ -43,10 +62,8 @@ const App = () => {
 
   // Step 4: Calculate the Ascendant
   const calculateAscendant = (LST, latitude) => {
-    const eclipticObliquity = 23.439281; // Obliquity of the ecliptic in degrees
     LST = (LST * 15 * Math.PI) / 180; // Convert LST from degrees to radians
     latitude = (latitude * Math.PI) / 180; // Convert latitude to radians
-    const eclipticObliquityRad = (eclipticObliquity * Math.PI) / 180;
 
     const tanLST = Math.tan(LST);
     const ascendantRadians = Math.atan(tanLST / Math.cos(latitude));
@@ -57,19 +74,21 @@ const App = () => {
       ascendantDegrees += 180;
     }
 
-    ascendantDegrees = ascendantDegrees % 360; // Keep within 0-360 degrees
+    ascendantDegrees = (ascendantDegrees + 360) % 360; // Keep within 0-360 degrees
     return ascendantDegrees;
   };
 
   // Step 5: Map Ascendant Degree to Zodiac Sign
   const zodiacSign = (degree) => {
-    const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+    const signs = ["Ovan", "Bik", "Blizanci", "Rak", "Lav", "Devica", "Vaga", "Škorpija", "Strelac", "Jarac", "Vodolija", "Ribe"];
     const signIndex = Math.floor(degree / 30);
     return signs[signIndex];
   };
 
   const calculateAscendantSign = () => {
     const { year, month, day, hour, minute, second, latitude, longitude } = birthData;
+
+    if (!isDateValid(month, day)) return;
 
     const JD = julianDate(year, month, day, hour, minute, second);
     const GMST = greenwichMeanSiderealTime(JD);
@@ -81,61 +100,108 @@ const App = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <div>
         <label>Godina: </label>
-        <input type="number" value={birthData.year} onChange={(e) => setBirthData({ ...birthData, year: Number(e.target.value) })} />
+        <input
+          type="number"
+          min={startDate.getFullYear() - 100}
+          max={startDate.getFullYear()}
+          value={birthData.year}
+          onChange={(e) => {
+            setBirthData({ ...birthData, year: Number(e.target.value) });
+          }}
+          onBlur={(e) => {
+            validateInput(Number(e.target.value), startDate.getFullYear() - 100, startDate.getFullYear() + 1)
+              ? setBirthData({ ...birthData, year: Number(e.target.value) })
+              : setBirthData({ ...birthData, year: startDate.getFullYear() });
+          }}
+        />
       </div>
-
       <div>
         <label>Mesec: </label>
-        <select value={birthData.month} onChange={(e) => setBirthData({ ...birthData, month: Number(e.target.value) })}>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
+        <select
+          value={birthData.month}
+          onChange={(e) => {
+            validateInput(Number(e.target.value), 1, 13) ? setBirthData({ ...birthData, month: Number(e.target.value) }) : setBirthData({ ...birthData, month: 1 });
+          }}>
+          <option value="1">Januar</option>
+          <option value="2">Februar</option>
+          <option value="3">Mart</option>
+          <option value="4">April</option>
+          <option value="5">Maj</option>
+          <option value="6">Jun</option>
+          <option value="7">Jul</option>
+          <option value="8">Avgust</option>
+          <option value="9">Septembar</option>
+          <option value="10">Oktobar</option>
+          <option value="11">Novembar</option>
+          <option value="12">Decembar</option>
         </select>
-        {/* <input type="number" value={birthData.month} onChange={(e) => setBirthData({ ...birthData, month: Number(e.target.value) })} /> */}
       </div>
 
       <div>
         <label>Dan: </label>
-        <input type="number" value={birthData.day} onChange={(e) => setBirthData({ ...birthData, day: Number(e.target.value) })} />
+        <input
+          type="number"
+          min="1"
+          max="31"
+          value={birthData.day}
+          onChange={(e) => {
+            validateInput(Number(e.target.value), 1, 32) ? setBirthData({ ...birthData, day: Number(e.target.value) }) : setBirthData({ ...birthData, day: startDate.getDate() });
+          }}
+        />
       </div>
 
       <div>
-        <label>Hour: </label>
-        <input type="number" value={birthData.hour} onChange={(e) => setBirthData({ ...birthData, hour: Number(e.target.value) })} />
+        <label>Sat: </label>
+        <input
+          type="number"
+          min="0"
+          max="23"
+          value={birthData.hour}
+          onChange={(e) => {
+            validateInput(Number(e.target.value), 0, 24) ? setBirthData({ ...birthData, hour: Number(e.target.value) }) : setBirthData({ ...birthData, hour: 0 });
+          }}
+        />
       </div>
 
       <div>
-        <label>Minute: </label>
-        <input type="number" value={birthData.minute} onChange={(e) => setBirthData({ ...birthData, minute: Number(e.target.value) })} />
+        <label>Minut: </label>
+        <input
+          type="number"
+          min="0"
+          max="59"
+          step="5"
+          value={birthData.minute}
+          onChange={(e) => {
+            validateInput(Number(e.target.value), 0, 60) ? setBirthData({ ...birthData, minute: Number(e.target.value) }) : setBirthData({ ...birthData, minute: 0 });
+          }}
+        />
       </div>
 
       <div>
-        <label>Latitude: </label>
-        <input type="number" value={birthData.latitude} onChange={(e) => setBirthData({ ...birthData, latitude: Number(e.target.value) })} />
+        <label>Država: </label>
+        <select>
+          <option value="sel">Srbija</option>
+          <option value="sel">BIH</option>
+          <option value="sel">Crna Gora</option>
+          <option value="sel">Hrvatska</option>
+          <option value="sel">Makedonija</option>
+        </select>
       </div>
 
-      <div>
-        <label>Longitude: </label>
-        <input type="number" value={birthData.longitude} onChange={(e) => setBirthData({ ...birthData, longitude: Number(e.target.value) })} />
-      </div>
+      <button onClick={calculateAscendantSign}>Izračunaj podznak</button>
 
-      <button onClick={calculateAscendantSign}>Calculate Ascendant</button>
+      {!isValidDate && (
+        <div>
+          <span>Unesite datum u ispravnom formatu</span>
+        </div>
+      )}
 
       {ascendant && (
         <div>
-          <h3>Your Ascendant is: {ascendant}</h3>
+          <h3>Vaš podznak je: {ascendant}</h3>
         </div>
       )}
     </div>
