@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import "react-datepicker/dist/react-datepicker.css";
-
 const App = () => {
   const startDate = new Date();
   const [isValidDate, setIsValidDate] = useState(true);
