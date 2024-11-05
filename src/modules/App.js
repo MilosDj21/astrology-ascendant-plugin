@@ -17,8 +17,13 @@ const App = () => {
   const [ascendant, setAscendant] = useState("");
 
   const validateInput = (value, min, max) => {
-    if (typeof value === "number" && value < max && value >= min) {
-      return true;
+    try {
+      const valInt = parseInt(value);
+      if (valInt < max && valInt >= min) {
+        return true;
+      }
+    } catch (error) {
+      return false;
     }
     return false;
   };
@@ -40,14 +45,23 @@ const App = () => {
     }
     const A = Math.floor(year / 100);
     const B = 2 - A + Math.floor(A / 4);
-    const JD = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5 + (hour + minute / 60 + second / 3600) / 24;
+    const JD =
+      Math.floor(365.25 * (year + 4716)) +
+      Math.floor(30.6001 * (month + 1)) +
+      day +
+      B -
+      1524.5 +
+      (hour + minute / 60 + second / 3600) / 24;
     return JD;
   };
 
   // Step 2: Greenwich Mean Sidereal Time (GMST)
   const greenwichMeanSiderealTime = (JD) => {
     const T = (JD - 2451545.0) / 36525.0;
-    let GMST = 280.46061837 + 360.98564736629 * (JD - 2451545) + T * T * (0.000387933 - T / 38710000.0);
+    let GMST =
+      280.46061837 +
+      360.98564736629 * (JD - 2451545) +
+      T * T * (0.000387933 - T / 38710000.0);
     GMST = GMST % 360.0;
     return GMST;
   };
@@ -79,7 +93,20 @@ const App = () => {
 
   // Step 5: Map Ascendant Degree to Zodiac Sign
   const zodiacSign = (degree) => {
-    const signs = ["Ovan", "Bik", "Blizanci", "Rak", "Lav", "Devica", "Vaga", "Škorpija", "Strelac", "Jarac", "Vodolija", "Ribe"];
+    const signs = [
+      "Ovan",
+      "Bik",
+      "Blizanci",
+      "Rak",
+      "Lav",
+      "Devica",
+      "Vaga",
+      "Škorpija",
+      "Strelac",
+      "Jarac",
+      "Vodolija",
+      "Ribe",
+    ];
     const signIndex = Math.floor(degree / 30);
     return signs[signIndex];
   };
@@ -88,7 +115,8 @@ const App = () => {
     setAscendant("");
     console.log(birthData);
 
-    const { year, month, day, hour, minute, second, latitude, longitude } = birthData;
+    const { year, month, day, hour, minute, second, latitude, longitude } =
+      birthData;
 
     if (!isDateValid(month, day)) return;
 
@@ -106,15 +134,19 @@ const App = () => {
       <div className="inputDiv">
         <label>Godina: </label>
         <input
-          type="number"
-          min={startDate.getFullYear() - 100}
-          max={startDate.getFullYear()}
+          //type="number"
+          //min={startDate.getFullYear() - 100}
+          //max={startDate.getFullYear()}
           value={birthData.year}
           onChange={(e) => {
-            setBirthData({ ...birthData, year: Number(e.target.value) });
+            setBirthData({ ...birthData, year: e.target.value });
           }}
           onBlur={(e) => {
-            validateInput(Number(e.target.value), startDate.getFullYear() - 100, startDate.getFullYear() + 1)
+            validateInput(
+              e.target.value,
+              startDate.getFullYear() - 100,
+              startDate.getFullYear() + 1,
+            )
               ? setBirthData({ ...birthData, year: Number(e.target.value) })
               : setBirthData({ ...birthData, year: startDate.getFullYear() });
           }}
@@ -126,8 +158,11 @@ const App = () => {
         <select
           value={birthData.month}
           onChange={(e) => {
-            validateInput(Number(e.target.value), 1, 13) ? setBirthData({ ...birthData, month: Number(e.target.value) }) : setBirthData({ ...birthData, month: 1 });
-          }}>
+            validateInput(e.target.value, 1, 13)
+              ? setBirthData({ ...birthData, month: Number(e.target.value) })
+              : setBirthData({ ...birthData, month: 1 });
+          }}
+        >
           <option value="1">Januar</option>
           <option value="2">Februar</option>
           <option value="3">Mart</option>
@@ -146,12 +181,17 @@ const App = () => {
       <div className="inputDiv">
         <label>Dan: </label>
         <input
-          type="number"
-          min="1"
-          max="31"
+          //type="number"
+          //min="1"
+          //max="31"
           value={birthData.day}
           onChange={(e) => {
-            validateInput(Number(e.target.value), 1, 32) ? setBirthData({ ...birthData, day: Number(e.target.value) }) : setBirthData({ ...birthData, day: startDate.getDate() });
+            setBirthData({ ...birthData, day: e.target.value });
+          }}
+          onBlur={(e) => {
+            validateInput(e.target.value, 1, 32)
+              ? setBirthData({ ...birthData, day: Number(e.target.value) })
+              : setBirthData({ ...birthData, day: startDate.getDate() });
           }}
         />
       </div>
@@ -159,12 +199,17 @@ const App = () => {
       <div className="inputDiv">
         <label>Sat: </label>
         <input
-          type="number"
-          min="0"
-          max="23"
+          //type="number"
+          //min="0"
+          //max="23"
           value={birthData.hour}
           onChange={(e) => {
-            validateInput(Number(e.target.value), 0, 24) ? setBirthData({ ...birthData, hour: Number(e.target.value) }) : setBirthData({ ...birthData, hour: 0 });
+            setBirthData({ ...birthData, hour: e.target.value });
+          }}
+          onBlur={(e) => {
+            validateInput(e.target.value, 0, 24)
+              ? setBirthData({ ...birthData, hour: Number(e.target.value) })
+              : setBirthData({ ...birthData, hour: 0 });
           }}
         />
       </div>
@@ -172,13 +217,18 @@ const App = () => {
       <div className="inputDiv">
         <label>Minut: </label>
         <input
-          type="number"
-          min="0"
-          max="59"
-          step="5"
+          //type="number"
+          //min="0"
+          //max="59"
+          //step="5"
           value={birthData.minute}
           onChange={(e) => {
-            validateInput(Number(e.target.value), 0, 60) ? setBirthData({ ...birthData, minute: Number(e.target.value) }) : setBirthData({ ...birthData, minute: 0 });
+            setBirthData({ ...birthData, minute: e.target.value });
+          }}
+          onBlur={(e) => {
+            validateInput(e.target.value, 0, 60)
+              ? setBirthData({ ...birthData, minute: Number(e.target.value) })
+              : setBirthData({ ...birthData, minute: 0 });
           }}
         />
       </div>
@@ -190,8 +240,13 @@ const App = () => {
           onChange={(e) => {
             const coordSplit = e.target.value.split("|");
             setCoordinates(e.target.value);
-            setBirthData({ ...birthData, latitude: Number(coordSplit[0]), longitude: Number(coordSplit[1]) });
-          }}>
+            setBirthData({
+              ...birthData,
+              latitude: Number(coordSplit[0]),
+              longitude: Number(coordSplit[1]),
+            });
+          }}
+        >
           <option disabled>Srbija</option>
           <option selected value="44.8125|20.4612">
             Beograd
